@@ -3,6 +3,7 @@ package com.example.plaintext.ui.screens.list
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
@@ -46,7 +47,35 @@ import com.example.plaintext.data.model.PasswordInfo
 
 @Composable
 fun ListView(
-) {}
+    listState: ListViewState,
+    navigateToEdit: (PasswordInfo) -> Unit,
+    onAddClick: () -> Unit
+) {
+    Scaffold(
+        topBar = { TopBarComponent()},
+        floatingActionButton = {
+            AddButton(onClick = onAddClick)
+        }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFF2C1B16)),
+        ) {
+            LazyColumn(
+            modifier = Modifier
+                .padding(innerPadding)
+        ) {
+            items(listState.passwordList.size) { index ->
+                ListItem(
+                    password = listState.passwordList[index],
+                    navigateToEdit = navigateToEdit
+                )
+            }
+        }}
+
+    }
+}
 
 @Composable
 fun AddButton(onClick: () -> Unit) {
@@ -66,25 +95,26 @@ fun ListItemContent(
     listState: ListViewState,
     navigateToEdit: (password: PasswordInfo) -> Unit
 ) {
-        when {
-            !listState.isCollected -> {
-                LoadingScreen()
-            }
+    when {
+        !listState.isCollected -> {
+            LoadingScreen()
+        }
 
-            else -> {
-                LazyColumn(
-                    modifier = modifier
-                        .fillMaxSize()
-                ) {
-                    items(listState.passwordList.size) {
-                        ListItem(
-                            listState.passwordList[it],
-                            navigateToEdit
-                        )
-                    }
+        else -> {
+            LazyColumn(
+                modifier = modifier
+                    .fillMaxSize()
+
+            ) {
+                items(listState.passwordList.size) {
+                    ListItem(
+                        listState.passwordList[it],
+                        navigateToEdit
+                    )
                 }
             }
         }
+    }
 }
 
 @Composable
@@ -111,6 +141,7 @@ fun ListItem(
             .fillMaxWidth()
             .height(70.dp)
             .clickable { navigateToEdit(password) }
+            .background(Color(0xFF2C1B16))
             .padding(horizontal = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -124,8 +155,8 @@ fun ListItem(
                 .weight(.7f)
                 .padding(horizontal = 5.dp),
         ) {
-            Text(title, fontSize = 20.sp)
-            Text(subTitle, fontSize = 14.sp)
+            Text(title, fontSize = 20.sp, color = Color.White)
+            Text(subTitle, fontSize = 14.sp, color = Color.White)
         }
         Icon(
             Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Menu",
@@ -134,3 +165,23 @@ fun ListItem(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun ListScreenPreview() {
+    // Dados de exemplo para o Preview
+    val samplePasswords = listOf(
+        PasswordInfo(id = 1, name = "Twitter", login = "dev", password = "senha123"),
+        PasswordInfo(id = 2, name = "Facebook", login = "devtitans", password = "senha456"),
+        PasswordInfo(id = 3, name = "Moodle", login = "dev.com", password = "senha789")
+    )
+    val listState = ListViewState(
+        passwordList = samplePasswords,
+        isCollected = true
+    )
+
+    ListView(
+        listState = listState,
+        navigateToEdit = {},
+        onAddClick = {}
+    )
+}
