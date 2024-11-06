@@ -29,17 +29,37 @@ fun PlainTextApp(
 ) {
     NavHost(
         navController = appState.navController,
-        startDestination = Screen.Hello("DevTITANS"),
+        startDestination = Screen.Login,
     )
     {
         composable<Screen.Hello>{
             var args = it.toRoute<Screen.Hello>()
             Hello_screen(args)
         }
+
+        composable<Screen.Preferences> {
+            SettingsScreen(navController = appState.navController)
+        }
+
+        composable<Screen.List> {
+            val listViewModel: ListViewModel = hiltViewModel()
+            ListView(
+                listState = listViewModel.listViewState,
+                navigateToEdit = { passwordInfo ->
+                    appState.navController.navigate(Screen.EditList(passwordInfo))
+                },
+                onAddClick = {
+                    // Ação ao clicar no botão de adicionar, pode navegar para uma tela de criação
+                }
+            )
+        }
+
+
+
         composable<Screen.Login>{
             Login_screen(
-                navigateToSettings = {},
-                navigateToList = {}
+                navigateToSettings = { appState.navController.navigate(Screen.Preferences) },
+                navigateToList = { appState.navController.navigate(Screen.List) }
             )
         }
         composable<Screen.EditList>(

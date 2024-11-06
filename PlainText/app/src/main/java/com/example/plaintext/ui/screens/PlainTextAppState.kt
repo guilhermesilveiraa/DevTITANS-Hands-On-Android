@@ -31,7 +31,8 @@ sealed class Screen() {
     object Preferences;
 
     @Serializable
-    object List;
+    object List : Screen() // Adicionamos o destino List aqui
+
 
     @Serializable
     data class EditList(
@@ -68,6 +69,9 @@ class JetcasterAppState(
 
     fun navigateToLogin(){
         navController.navigate(Screen.Login)
+    }
+    fun navigateToList() {
+        navController.navigate(Screen.List)
     }
 
 }
