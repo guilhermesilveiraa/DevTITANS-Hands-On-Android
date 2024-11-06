@@ -44,6 +44,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.plaintext.data.model.PasswordInfo
+import com.example.plaintext.ui.screens.JetcasterAppState
 
 @Composable
 fun ListView(
@@ -59,20 +60,20 @@ fun ListView(
     ) { innerPadding ->
         Box(
             modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFF2C1B16)),
+                .fillMaxSize()
+                .background(Color(0xFF2C1B16)),
         ) {
             LazyColumn(
-            modifier = Modifier
-                .padding(innerPadding)
-        ) {
-            items(listState.passwordList.size) { index ->
-                ListItem(
-                    password = listState.passwordList[index],
-                    navigateToEdit = navigateToEdit
-                )
-            }
-        }}
+                modifier = Modifier
+                    .padding(innerPadding)
+            ) {
+                items(listState.passwordList.size) { index ->
+                    ListItem(
+                        password = listState.passwordList[index],
+                        navigateToEdit = navigateToEdit
+                    )
+                }
+            }}
 
     }
 }
