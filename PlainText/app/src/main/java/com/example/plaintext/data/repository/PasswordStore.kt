@@ -4,40 +4,64 @@ import com.example.plaintext.data.dao.PasswordDao
 import com.example.plaintext.data.model.Password
 import com.example.plaintext.data.model.PasswordInfo
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 interface PasswordDBStore {
-    fun getList(): Flow<List<Password>>
+    fun getList(): Flow<List<PasswordInfo>>
     suspend fun add(password: Password): Long
     suspend fun update(password: Password)
-    fun get(id: Int): Password?
+    suspend fun get(id: Int): Password?
     suspend fun save(passwordInfo: PasswordInfo)
     suspend fun isEmpty(): Flow<Boolean>
+    suspend fun getAllPasswords(): Flow<List<Password>>
 }
 
 class LocalPasswordDBStore(
-    private val passwordDao : PasswordDao
-): PasswordDBStore {
-    override fun getList(): Flow<List<Password>> {
-        TODO("Not yet implemented")
+    private val passwordDao: PasswordDao
+) : PasswordDBStore {
+
+    override fun getList(): Flow<List<PasswordInfo>> {
+        return passwordDao.getAllPasswords().map { passwords ->
+            passwords.map { password ->
+                PasswordInfo(
+                    id = password.id,
+                    name = password.name,
+                    login = password.login,
+                    password = password.password,
+                    notes = password.notes ?: ""
+                )
+            }
+        }
     }
 
     override suspend fun add(password: Password): Long {
-        TODO("Not yet implemented")
+        return passwordDao.addPassword(password)
     }
 
     override suspend fun update(password: Password) {
-        TODO("Not yet implemented")
+        passwordDao.updatePassword(password)
     }
 
-    override fun get(id: Int): Password? {
-        TODO("Not yet implemented")
+    override suspend fun get(id: Int): Password? {
+        return passwordDao.getPasswordById(id)
+    }
+
+    override suspend fun getAllPasswords(): Flow<List<Password>> {
+        return passwordDao.getAllPasswords()
     }
 
     override suspend fun save(passwordInfo: PasswordInfo) {
-        TODO("Not yet implemented")
+        val password = Password(
+            id = passwordInfo.id,
+            name = passwordInfo.name,
+            login = passwordInfo.login,
+            password = passwordInfo.password,
+            notes = passwordInfo.notes
+        )
+        add(password)
     }
 
     override suspend fun isEmpty(): Flow<Boolean> {
-        TODO("Not yet implemented")
+        return passwordDao.getAllPasswords().map { it.isEmpty() }
     }
 }
