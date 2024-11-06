@@ -170,9 +170,9 @@ fun ListItem(
 fun ListScreenPreview() {
     // Dados de exemplo para o Preview
     val samplePasswords = listOf(
-        PasswordInfo(id = 1, name = "Twitter", login = "dev", password = "senha123"),
-        PasswordInfo(id = 2, name = "Facebook", login = "devtitans", password = "senha456"),
-        PasswordInfo(id = 3, name = "Moodle", login = "dev.com", password = "senha789")
+        PasswordInfo(id = 1, name = "Twitter", login = "dev", password = "senha123", notes = "Nota1"),
+        PasswordInfo(id = 2, name = "Facebook", login = "devtitans", password = "senha456", notes = "Nota2"),
+        PasswordInfo(id = 3, name = "Moodle", login = "dev.com", password = "senha789", notes = "Nota3")
     )
     val listState = ListViewState(
         passwordList = samplePasswords,
