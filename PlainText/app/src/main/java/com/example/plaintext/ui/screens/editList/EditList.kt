@@ -55,34 +55,37 @@ fun EditList(
     navigateBack: () -> Unit,
     savePassword: (password: PasswordInfo) -> Unit
 ) {
-
+    // Criação de estados mutáveis para os campos de texto, já populados com dados de args
     val stateSenha = EditListState(
-        nomeState = rememberSaveable {mutableStateOf(args.password.name)} ,
-        usuarioState = rememberSaveable {mutableStateOf(args.password.login)},
-        senhaState = rememberSaveable {mutableStateOf(args.password.password)},
-        notasState = rememberSaveable {mutableStateOf(args.password.notes)}
+
+        nomeState = rememberSaveable { mutableStateOf(args.password.name) },
+        usuarioState = rememberSaveable { mutableStateOf(args.password.login) },
+        senhaState = rememberSaveable { mutableStateOf(args.password.password) },
+        notasState = rememberSaveable { mutableStateOf(args.password.notes) }
     )
 
-    Scaffold(
+    var textTitle = "Adicionar nova senha";
+    if(-1 != args.password.id){
+        textTitle = "Editar senha";
+    }
 
+    Scaffold(
         topBar = {
             Box(
                 Modifier
                     .background(Color(0xFF2C1B16))
                     .fillMaxWidth()
                     .padding(vertical = 10.dp, horizontal = 10.dp)
-            ){
-                Text("Plain Text", color = Color.White,fontSize = 20.sp,)
+            ) {
+                Text("Plain Text", color = Color.White, fontSize = 20.sp)
             }
         },
-
         content = { paddingValues ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .background(Color(0xFF2C1B16)), // Fundo marrom escuro
-
+                    .background(Color(0xFF2C1B16)),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -92,37 +95,39 @@ fun EditList(
                         .background(Color(0xFFB2EB40))
                         .fillMaxWidth()
                         .padding(horizontal = 30.dp, vertical = 16.dp)
-
-                ){
-                    Text("Adicionar nova Senha",
-                        color = Color.White,
-                        fontSize = 20.sp,
-
-                    )
+                ) {
+                    Text(textTitle, color = Color.White, fontSize = 20.sp)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Componentes de entrada de dados
                 EditInput("Nome", textInputState = stateSenha.nomeState)
-                EditInput("Usuário",  textInputState = stateSenha.usuarioState)
-                EditInput("Senha",  textInputState = stateSenha.senhaState)
-                EditInput("Notas", textInputHeight = 100,  textInputState = stateSenha.notasState)
+                EditInput("Usuário", textInputState = stateSenha.usuarioState)
+                EditInput("Senha", textInputState = stateSenha.senhaState)
+                EditInput("Notas", textInputHeight = 100, textInputState = stateSenha.notasState)
 
                 Spacer(modifier = Modifier.height(20.dp))
 
+                // Botão de salvar
                 Button(
                     onClick = {
-                        // Aqui vai o código para salvar a senha
+                        // Criação de um objeto PasswordInfo com as informações atualizadas
+                        val updatedPassword = PasswordInfo(
+                            id = args.password.id, // Mantém o ID se for edição
+                            name = stateSenha.nomeState.value,
+                            login = stateSenha.usuarioState.value,
+                            password = stateSenha.senhaState.value,
+                            notes = stateSenha.notasState.value
+                        )
+                        savePassword(updatedPassword) // Chama a função de salvar com os dados atualizados
+                        navigateBack() // Volta para a tela anterior
                     },
-
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFFFA26B), // Cor de fundo do botão
-                        contentColor = Color(0xFF4A2C1F)    // Cor do texto do botão
+                        containerColor = Color(0xFFFFA26B),
+                        contentColor = Color(0xFF4A2C1F)
                     ),
-
-                    modifier = Modifier
-                        .padding(16.dp)
-
+                    modifier = Modifier.padding(16.dp)
                 ) {
                     Text("Salvar", fontSize = 16.sp)
                 }
@@ -130,6 +135,7 @@ fun EditList(
         }
     )
 }
+
 
 
 @Composable
