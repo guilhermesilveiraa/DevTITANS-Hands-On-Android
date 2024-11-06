@@ -19,6 +19,7 @@ import com.example.plaintext.ui.screens.login.Login_screen
 import com.example.plaintext.ui.screens.login.TopBarComponent
 import com.example.plaintext.ui.screens.preferences.SettingsScreen
 import com.example.plaintext.ui.viewmodel.ListViewModel
+import com.example.plaintext.ui.viewmodel.ListViewState
 import com.example.plaintext.ui.viewmodel.PreferencesViewModel
 import com.example.plaintext.utils.parcelableType
 import kotlin.reflect.typeOf
@@ -30,8 +31,7 @@ fun PlainTextApp(
     NavHost(
         navController = appState.navController,
         startDestination = Screen.Login,
-    )
-    {
+    ) {
         composable<Screen.Hello>{
             var args = it.toRoute<Screen.Hello>()
             Hello_screen(args)
@@ -42,19 +42,29 @@ fun PlainTextApp(
         }
 
         composable<Screen.List> {
-            val listViewModel: ListViewModel = hiltViewModel()
+            val samplePasswords = listOf(
+                PasswordInfo(id = 1, name = "Twitter", login = "dev", password = "senha123", notes = "Nota1"),
+                PasswordInfo(id = 2, name = "Facebook", login = "devtitans", password = "senha456", notes = "Nota2"),
+                PasswordInfo(id = 3, name = "Moodle", login = "dev.com", password = "senha789", notes = "Nota3")
+            )
+
+            val listState = ListViewState(
+                passwordList = samplePasswords,
+                isCollected = true
+            )
+
             ListView(
-                listState = listViewModel.listViewState,
+                listState = listState,
                 navigateToEdit = { passwordInfo ->
-                    appState.navController.navigate(Screen.EditList(passwordInfo))
+                    // Passando o PasswordInfo para a tela de edição
+                    appState.navigateToEditList(passwordInfo)
                 },
                 onAddClick = {
-                    // Ação ao clicar no botão de adicionar, pode navegar para uma tela de criação
+                    // Passando um PasswordInfo vazio ao adicionar um novo item
+                    appState.navigateToEditList(PasswordInfo(-1, "", "", "", ""))
                 }
             )
         }
-
-
 
         composable<Screen.Login>{
             Login_screen(

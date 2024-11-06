@@ -33,7 +33,6 @@ sealed class Screen() {
     @Serializable
     object List : Screen() // Adicionamos o destino List aqui
 
-
     @Serializable
     data class EditList(
         val password: PasswordInfo
@@ -70,9 +69,16 @@ class JetcasterAppState(
     fun navigateToLogin(){
         navController.navigate(Screen.Login)
     }
+
     fun navigateToList() {
         navController.navigate(Screen.List)
     }
+
+    fun navigateToEditList(passwordInfo: PasswordInfo){
+        navController.navigate(Screen.EditList(passwordInfo))
+
+    }
+
 
 }
 
