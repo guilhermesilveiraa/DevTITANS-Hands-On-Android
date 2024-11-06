@@ -40,6 +40,9 @@ fun SettingsScreen(navController: NavHostController?,
 
 @Composable
 fun SettingsContent(modifier: Modifier = Modifier, viewModel: PreferencesViewModel) {
+
+    val preferencesState = viewModel.preferencesState
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -49,19 +52,19 @@ fun SettingsContent(modifier: Modifier = Modifier, viewModel: PreferencesViewMod
         PreferenceInput(
             title = "Preencher Login",
             label = "Login",
-            fieldValue = "",
+            fieldValue = preferencesState.login,
             summary = "Preencher login na tela inicial"
-        ){
-            // função para alterar o login
+        ){ newLogin ->
+            viewModel.updateLogin(newLogin)
         }
 
         PreferenceInput(
             title = "Setar Senha",
             label = "Label",
-            fieldValue = "",
+            fieldValue = preferencesState.password,
             summary = "Senha para entrar no sistema"
-        ){
-            // função para alterar a senha
+        ){ newPassword ->
+            viewModel.updatePassword(newPassword) // Atualiza a senha
         }
 
         PreferenceItem(
@@ -72,9 +75,10 @@ fun SettingsContent(modifier: Modifier = Modifier, viewModel: PreferencesViewMod
             },
             control = {
                 Switch(
-                    checked = false, // deve ler o estado que representa se o switch está ligado ou não
-                    onCheckedChange = {
+                    checked = preferencesState.preencher, // deve ler o estado que representa se o switch está ligado ou não
+                    onCheckedChange = { isChecked ->
                         // deve alterar o estado que representa se o switch está ligado ou não
+                        viewModel.updatePreencher(isChecked)
                     }
                 )
             }
