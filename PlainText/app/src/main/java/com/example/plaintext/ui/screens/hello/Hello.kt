@@ -80,7 +80,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class dbSimulator() {
+class dbSimulator @Inject constructor() {
     private val datalist = mutableListOf<String>();
 
     init {
