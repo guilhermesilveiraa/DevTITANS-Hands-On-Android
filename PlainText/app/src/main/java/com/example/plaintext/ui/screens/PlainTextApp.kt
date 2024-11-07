@@ -79,7 +79,7 @@ fun PlainTextApp(
             EditList(
                 args,
                 navigateBack = {},
-                savePassword = { password -> Unit }
+                //savePassword = { password -> Unit }
             )
         }
     }
