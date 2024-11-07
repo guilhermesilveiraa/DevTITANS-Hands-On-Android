@@ -26,22 +26,33 @@ import com.example.plaintext.ui.viewmodel.PreferencesViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun SettingsScreen(navController: NavHostController?,
-                   viewModel: PreferencesViewModel = hiltViewModel()
+fun SettingsScreen(viewModel: PreferencesViewModel = hiltViewModel()
 ){
     Scaffold(
         topBar = {
             TopBarComponent()
         }
     ){ padding ->
-        SettingsContent(modifier = Modifier.padding(padding), viewModel)
+        SettingsContent(
+            modifier = Modifier.padding(padding),
+            viewModel.preferencesState,
+            viewModel::updateLogin,
+            viewModel::updatePassword,
+            viewModel::updatePreencher)
     }
 }
 
 @Composable
-fun SettingsContent(modifier: Modifier = Modifier, viewModel: PreferencesViewModel) {
+fun SettingsContent(
+    modifier: Modifier = Modifier,
+    state: PreferencesState,
+    updateLogin: (login: String) -> Unit,
+    updatePassword: (password: String) -> Unit,
+    updatePreencher: (state: Boolean) -> Unit,
 
-    val preferencesState = viewModel.preferencesState
+) {
+
+    val preferencesState = state
 
     Column(
         modifier = modifier
@@ -55,7 +66,7 @@ fun SettingsContent(modifier: Modifier = Modifier, viewModel: PreferencesViewMod
             fieldValue = preferencesState.login,
             summary = "Preencher login na tela inicial"
         ){ newLogin ->
-            viewModel.updateLogin(newLogin)
+            updateLogin(newLogin)
         }
 
         PreferenceInput(
@@ -64,7 +75,7 @@ fun SettingsContent(modifier: Modifier = Modifier, viewModel: PreferencesViewMod
             fieldValue = preferencesState.password,
             summary = "Senha para entrar no sistema"
         ){ newPassword ->
-            viewModel.updatePassword(newPassword) // Atualiza a senha
+            updatePassword(newPassword) // Atualiza a senha
         }
 
         PreferenceItem(
@@ -78,16 +89,10 @@ fun SettingsContent(modifier: Modifier = Modifier, viewModel: PreferencesViewMod
                     checked = preferencesState.preencher, // deve ler o estado que representa se o switch está ligado ou não
                     onCheckedChange = { isChecked ->
                         // deve alterar o estado que representa se o switch está ligado ou não
-                        viewModel.updatePreencher(isChecked)
+                        updatePreencher(isChecked)
                     }
                 )
             }
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SettingsScreenPreview() {
-    SettingsScreen(null)
 }
