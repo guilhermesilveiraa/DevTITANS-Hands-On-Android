@@ -21,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,14 +33,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.plaintext.data.model.PasswordInfo
 import com.example.plaintext.ui.screens.Screen
 import com.example.plaintext.ui.screens.login.TopBarComponent
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.plaintext.ui.viewmodel.EditListViewModel
+import com.example.plaintext.ui.viewmodel.ListViewModel
 
 data class EditListState(
     val nomeState: MutableState<String>,
@@ -58,18 +55,20 @@ fun isPasswordEmpty(password: PasswordInfo): Boolean {
 fun EditList(
     args: Screen.EditList,
     navigateBack: () -> Unit,
-    editListViewModel: EditListViewModel = hiltViewModel()
+    savePassword: ListViewModel = hiltViewModel()
 ) {
-    // Inicializa o estado do ViewModel com os dados do argumento
-    LaunchedEffect(Unit) {
-        editListViewModel.initializeState(args.password)
-    }
+    // Criação de estados mutáveis para os campos de texto, já populados com dados de args
+    val stateSenha = EditListState(
 
-    val state = editListViewModel.viewState
+        nomeState = rememberSaveable { mutableStateOf(args.password.name) },
+        usuarioState = rememberSaveable { mutableStateOf(args.password.login) },
+        senhaState = rememberSaveable { mutableStateOf(args.password.password) },
+        notasState = rememberSaveable { mutableStateOf(args.password.notes) }
+    )
 
-    var textTitle = "Adicionar nova senha"
-    if (args.password.id != -1) {
-        textTitle = "Editar senha"
+    var textTitle = "Adicionar nova senha";
+    if(-1 != args.password.id){
+        textTitle = "Editar senha";
     }
 
     Scaffold(
@@ -104,18 +103,26 @@ fun EditList(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Componentes de entrada de dados, agora usando o ViewModel para gerenciar o estado
-                EditInput("Nome", textInputState = state.name, onValueChange = { editListViewModel.onNameChange(it) })
-                EditInput("Usuário", textInputState = state.login, onValueChange = { editListViewModel.onLoginChange(it) })
-                EditInput("Senha", textInputState = state.password, onValueChange = { editListViewModel.onPasswordChange(it) })
-                EditInput("Notas", textInputHeight = 100, textInputState = state.notes, onValueChange = { editListViewModel.onNotesChange(it) })
+                // Componentes de entrada de dados
+                EditInput("Nome", textInputState = stateSenha.nomeState)
+                EditInput("Usuário", textInputState = stateSenha.usuarioState)
+                EditInput("Senha", textInputState = stateSenha.senhaState)
+                EditInput("Notas", textInputHeight = 100, textInputState = stateSenha.notasState)
 
                 Spacer(modifier = Modifier.height(20.dp))
 
                 // Botão de salvar
                 Button(
                     onClick = {
-                        val updatedPassword = editListViewModel.savePasswordInfo()
+                        // Criação de um objeto PasswordInfo com as informações atualizadas
+                        val updatedPassword = PasswordInfo(
+                            id = args.password.id, // Mantém o ID se for edição
+                            name = stateSenha.nomeState.value,
+                            login = stateSenha.usuarioState.value,
+                            password = stateSenha.senhaState.value,
+                            notes = stateSenha.notasState.value
+                        )
+                        savePassword.savePassword(updatedPassword) // Chama a função de salvar com os dados atualizados
                         navigateBack() // Volta para a tela anterior
                     },
                     colors = ButtonDefaults.buttonColors(
@@ -130,34 +137,6 @@ fun EditList(
         }
     )
 }
-
-@Composable
-fun EditInput(
-    textInputLabel: String,
-    textInputState: String,
-    onValueChange: (String) -> Unit,
-    textInputHeight: Int = 60
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(textInputHeight.dp)
-            .padding(horizontal = 30.dp),
-        horizontalArrangement = Arrangement.Center,
-    ) {
-        OutlinedTextField(
-            value = textInputState,
-            onValueChange = onValueChange,
-            label = { Text(textInputLabel, color = Color.White) },
-            modifier = Modifier
-                .height(textInputHeight.dp)
-                .fillMaxWidth(),
-            textStyle = TextStyle(color = Color.White)
-        )
-    }
-    Spacer(modifier = Modifier.height(10.dp))
-}
-
 
 
 
@@ -192,15 +171,7 @@ fun EditInput(
     Spacer(modifier = Modifier.height(10.dp))
 }
 
-@Preview(showBackground = true)
-@Composable
-fun EditListPreview() {
-    EditList(
-        Screen.EditList(PasswordInfo(1, "", "", "", "")),
-        navigateBack = {},
-        //savePassword = {}
-    )
-}
+
 
 @Preview(showBackground = true)
 @Composable

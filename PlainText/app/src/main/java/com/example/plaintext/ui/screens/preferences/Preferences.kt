@@ -50,7 +50,7 @@ fun SettingsContent(
     updatePassword: (password: String) -> Unit,
     updatePreencher: (state: Boolean) -> Unit,
 
-) {
+    ) {
 
     val preferencesState = state
 
