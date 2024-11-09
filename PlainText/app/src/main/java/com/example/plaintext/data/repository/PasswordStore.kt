@@ -52,14 +52,21 @@ class LocalPasswordDBStore(
 
     override suspend fun save(passwordInfo: PasswordInfo) {
         val password = Password(
-            id = passwordInfo.id,
+            id = if (passwordInfo.id == -1) 0 else passwordInfo.id, // Define id como 0 para novas senhas
             name = passwordInfo.name,
             login = passwordInfo.login,
             password = passwordInfo.password,
             notes = passwordInfo.notes
         )
-        add(password)
+
+        if (passwordInfo.id == -1) { // Insere nova senha se o ID for -1
+            add(password)
+        } else { // Atualiza senha existente
+            update(password)
+        }
     }
+
+
 
     override suspend fun isEmpty(): Flow<Boolean> {
         return passwordDao.getAllPasswords().map { it.isEmpty() }

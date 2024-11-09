@@ -19,10 +19,10 @@ data class PreferencesState(
 )
 
 @HiltViewModel
-class PreferencesViewModel @Inject constructor(
-    handle: SavedStateHandle,
-) : ViewModel() {
-    var preferencesState by mutableStateOf(PreferencesState(login = "devtitans", password = "123", preencher = true))
+class PreferencesViewModel @Inject constructor() : ViewModel() {
+    var preferencesState by mutableStateOf(
+        PreferencesState(login = "devtitans", password = "123", preencher = true)
+    )
         private set
 
     fun updateLogin(login: String) {
@@ -37,7 +37,7 @@ class PreferencesViewModel @Inject constructor(
         preferencesState = preferencesState.copy(preencher = preencher)
     }
 
-    fun checkCredentials(login: String, password: String): Boolean{
+    fun checkCredentials(login: String, password: String): Boolean {
         return login == preferencesState.login && password == preferencesState.password
     }
 }

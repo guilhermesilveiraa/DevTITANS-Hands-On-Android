@@ -47,10 +47,6 @@ data class EditListState(
     val notasState: MutableState<String>,
 )
 
-fun isPasswordEmpty(password: PasswordInfo): Boolean {
-    return password.name.isEmpty() && password.login.isEmpty() && password.password.isEmpty() && password.notes.isEmpty()
-}
-
 @Composable
 fun EditList(
     args: Screen.EditList,
@@ -59,11 +55,10 @@ fun EditList(
 ) {
     // Criação de estados mutáveis para os campos de texto, já populados com dados de args
     val stateSenha = EditListState(
-
-        nomeState = rememberSaveable { mutableStateOf(args.password.name) },
-        usuarioState = rememberSaveable { mutableStateOf(args.password.login) },
-        senhaState = rememberSaveable { mutableStateOf(args.password.password) },
-        notasState = rememberSaveable { mutableStateOf(args.password.notes) }
+        nomeState = rememberSaveable { mutableStateOf(args.password.name ?: "") },
+        usuarioState = rememberSaveable { mutableStateOf(args.password.login ?: "") },
+        senhaState = rememberSaveable { mutableStateOf(args.password.password ?: "") },
+        notasState = rememberSaveable { mutableStateOf(args.password.notes ?: "") }
     )
 
     var textTitle = "Adicionar nova senha";
@@ -122,8 +117,12 @@ fun EditList(
                             password = stateSenha.senhaState.value,
                             notes = stateSenha.notasState.value
                         )
-                        savePassword.savePassword(updatedPassword) // Chama a função de salvar com os dados atualizados
-                        navigateBack() // Volta para a tela anterior
+
+                        // Salva a senha e atualiza a lista
+                        savePassword.savePassword(updatedPassword)
+
+                        // Volta para a tela anterior após a senha ser salva
+                        navigateBack()
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFFFA26B),

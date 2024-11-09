@@ -29,51 +29,42 @@ import kotlin.reflect.typeOf
 fun PlainTextApp(
     appState: JetcasterAppState = rememberJetcasterAppState()
 ) {
-    val loginViewModel : LoginViewModel = hiltViewModel()
-    val preferencesViewModel : PreferencesViewModel = hiltViewModel()
-    var listView : ListViewModel = hiltViewModel()
+    val loginViewModel: LoginViewModel = hiltViewModel()
+    val preferencesViewModel: PreferencesViewModel = hiltViewModel()
+    val listView: ListViewModel = hiltViewModel()
 
     NavHost(
         navController = appState.navController,
         startDestination = Screen.Login,
     ) {
-        composable<Screen.Hello>{
-            var args = it.toRoute<Screen.Hello>()
+        composable<Screen.Hello> {
+            val args = it.toRoute<Screen.Hello>()
             Hello_screen(args)
         }
 
         composable<Screen.Preferences> {
-            SettingsScreen(
-                viewModel = preferencesViewModel
-            )
+            SettingsScreen(viewModel = preferencesViewModel)
         }
 
         composable<Screen.List> {
-            val samplePasswords = listOf(
-                PasswordInfo(id = 1, name = "Twitter", login = "dev", password = "senha123", notes = "Nota1"),
-                PasswordInfo(id = 2, name = "Facebook", login = "devtitans", password = "senha456", notes = "Nota2"),
-                PasswordInfo(id = 3, name = "Moodle", login = "dev.com", password = "senha789", notes = "Nota3")
-            )
-
-            val listState = ListViewState(
-                passwordList = samplePasswords,
-                isCollected = true
-            )
+            // Observa o estado atual da lista a partir do ListViewModel
+            val listState = listView.listViewState
 
             ListView(
                 listState = listState,
                 navigateToEdit = { passwordInfo ->
-                    // Passando o PasswordInfo para a tela de edição
+                    // Navega para a tela de edição com o PasswordInfo selecionado
                     appState.navigateToEditList(passwordInfo)
                 },
                 onAddClick = {
-                    // Passando um PasswordInfo vazio ao adicionar um novo item
                     appState.navigateToEditList(PasswordInfo(-1, "", "", "", ""))
-                }
+                },
+                navigateToSettings = { appState.navController.navigate(Screen.Preferences) } // Adicionando navegação
             )
+
         }
 
-        composable<Screen.Login>{
+        composable<Screen.Login> {
             Login_screen(
                 navigateToSettings = { appState.navController.navigate(Screen.Preferences) },
                 navigateToList = { appState.navController.navigate(Screen.List) },
@@ -81,15 +72,19 @@ fun PlainTextApp(
                 preferencesViewModel = preferencesViewModel,
             )
         }
+
         composable<Screen.EditList>(
             typeMap = mapOf(typeOf<PasswordInfo>() to parcelableType<PasswordInfo>())
         ) {
             val args = it.toRoute<Screen.EditList>()
             EditList(
                 args,
-                navigateBack = {},
-                savePassword =  listView
+                navigateBack = {
+                    appState.navController.popBackStack() // Retorna à tela anterior
+                },
+                savePassword = listView
             )
         }
     }
 }
+

@@ -36,6 +36,12 @@ class ListViewModel @Inject constructor(
     fun savePassword(passwordInfo: PasswordInfo) {
         viewModelScope.launch {
             passwordDBStore.save(passwordInfo)
+
+            // Atualiza a lista de senhas na interface
+            passwordDBStore.getList().collect { passwords ->
+                listViewState = ListViewState(passwordList = passwords, isCollected = true)
+            }
         }
     }
+
 }

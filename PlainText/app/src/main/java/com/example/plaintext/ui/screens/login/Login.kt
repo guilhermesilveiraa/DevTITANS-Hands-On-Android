@@ -1,5 +1,6 @@
 package com.example.plaintext.ui.screens.login
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -198,6 +199,7 @@ fun TopBarComponent(
                     onClick = {
                         navigateToSettings?.invoke()
                         expanded = false
+                        Log.d("Navigation", "Navigating to Preferences")
                     },
                     modifier = Modifier.padding(8.dp)
                 )

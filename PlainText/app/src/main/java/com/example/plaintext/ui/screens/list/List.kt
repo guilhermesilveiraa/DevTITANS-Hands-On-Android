@@ -50,10 +50,11 @@ import com.example.plaintext.ui.screens.JetcasterAppState
 fun ListView(
     listState: ListViewState,
     navigateToEdit: (PasswordInfo) -> Unit,
-    onAddClick: () -> Unit
+    onAddClick: () -> Unit,
+    navigateToSettings: () -> Unit
 ) {
     Scaffold(
-        topBar = { TopBarComponent()},
+        topBar = { TopBarComponent(navigateToSettings = navigateToSettings) },
         floatingActionButton = {
             AddButton(onClick = onAddClick)
         }
@@ -73,8 +74,8 @@ fun ListView(
                         navigateToEdit = navigateToEdit
                     )
                 }
-            }}
-
+            }
+        }
     }
 }
 
@@ -183,6 +184,7 @@ fun ListScreenPreview() {
     ListView(
         listState = listState,
         navigateToEdit = {},
-        onAddClick = {}
+        onAddClick = {},
+        navigateToSettings = {}
     )
 }

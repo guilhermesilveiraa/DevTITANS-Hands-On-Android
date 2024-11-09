@@ -26,9 +26,10 @@ class EditListViewModel @Inject constructor() : ViewModel() {
             name = passwordInfo.name,
             login = passwordInfo.login,
             password = passwordInfo.password,
-            notes = passwordInfo.notes
+            notes = passwordInfo.notes ?: ""
         )
     }
+
 
     fun onNameChange(newName: String) {
         viewState = viewState.copy(name = newName)
